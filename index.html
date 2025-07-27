@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inventario - Sistema Web</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+ <!-- Login -->
+<style>
+  /* Fondo azul marino */
+  #login {
+    background: linear-gradient(115deg, #5898e6, #002147);
+  }
+
+  /* Animación para el formulario */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  #login-form {
+    animation: fadeInUp 0.8s ease forwards;
+  }
+</style>
+
+<div id="login" class="h-screen flex items-center justify-center">
+  <div id="login-form" class="bg-white p-10 rounded-3xl shadow-2xl w-80 max-w-full text-center">
+    
+    <!-- Logo de la empresa -->
+    <img src="1605205955914.jpg" alt="Logo Empresa" class="mx-auto mb-6 w-24 h-24 object-contain" />
+    
+    <h2 class="text-3xl font-extrabold mb-8 text-gray-900">Iniciar sesión</h2>
+    <input
+      id="user"
+      type="text"
+      placeholder="Usuario"
+      class="w-full mb-5 p-4 border-2 border-blue-700 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition duration-300 text-lg"
+    />
+    <input
+      id="pass"
+      type="password"
+      placeholder="Contraseña"
+      class="w-full mb-8 p-4 border-2 border-blue-700 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition duration-300 text-lg"
+    />
+    <button
+      onclick="login()"
+      class="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold py-3 rounded-full transition duration-300 shadow-lg hover:shadow-xl"
+    >
+      Entrar
+    </button>
+  </div>
+</div>
+
+
+
+  <!-- Panel Principal -->
+  <div id="panel" class="hidden h-screen flex">
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-blue-900 text-white w-64 min-h-screen p-4 transition-transform duration-300 fixed left-0 top-0 z-20">
+      <h2 class="text-2xl font-bold mb-6">Menú</h2>
+      <nav class="space-y-4">
+        <button onclick="mostrarSeccion('inventario')" class="block w-full text-left px-4 py-2 rounded hover:bg-blue-700">
+          Inventario
+        </button>
+        <button onclick="mostrarSeccion('prestamos')" class="block w-full text-left px-4 py-2 rounded hover:bg-blue-700">
+          Préstamos
+        </button>
+        <button onclick="mostrarSeccion('movimientos')" class="block w-full text-left px-4 py-2 rounded hover:bg-blue-700">
+          Movimientos
+        </button>
+        <button onclick="exportarPDF()" class="block w-full text-left px-4 py-2 rounded hover:bg-green-700 bg-green-600">
+          Exportar PDF
+        </button>
+      </nav>
+    </div>
+
+    <!-- Botón hamburguesa -->
+    <button id="btnSidebar" onclick="toggleSidebar()" 
+      class="fixed top-4 left-4 z-30 bg-blue-900 text-white p-2 rounded-md hover:bg-blue-700 focus:outline-none transition">
+      ☰
+    </button>
+
+    <!-- Contenido Principal -->
+    <div id="contenido" class="flex-1 p-6 ml-64 transition-all duration-300">
+      <h1 class="text-3xl font-bold mb-6">Sistema de Inventario</h1>
+
+      <!-- SECCIÓN INVENTARIO -->
+      <div id="inventario-seccion">
+        <div class="bg-white p-4 rounded shadow-md mb-6">
+          <h2 class="text-xl font-semibold mb-4">Registrar Producto</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input id="codigo" type="text" placeholder="Codigo" class="p-2 border rounded" />
+            <input id="producto" type="text" placeholder="Producto" class="p-2 border rounded" />
+            <input id="cantidad" type="number" placeholder="Cantidad" class="p-2 border rounded" />
+            <input id="responsable" type="text" placeholder="Responsable" class="p-2 border rounded" />
+          </div>
+          <button onclick="registrarProducto()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+            Agregar
+          </button>
+          <button onclick="borrarDatos()" class="mt-4 ml-4 bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+            Borrar Todos los Datos
+          </button>
+        </div>
+
+        <div class="mb-4">
+          <input id="buscar" type="text" placeholder="Buscar por código o nombre" class="p-2 border rounded w-full md:w-1/3" />
+        </div>
+
+        <div id="tabla-container" class="bg-white p-4 rounded shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Inventario Actual</h2>
+          <table class="w-full text-left border border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="p-2 border">Codigo</th>
+                <th class="p-2 border">Producto</th>
+                <th class="p-2 border">Cantidad</th>
+                <th class="p-2 border">Responsable</th>
+                <th class="p-2 border">Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-inventario"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN PRÉSTAMOS -->
+      <div id="prestamos-seccion" class="hidden">
+        <h2 class="text-2xl font-bold mb-4">Préstamo de Herramientas</h2>
+        <div class="bg-white p-4 rounded shadow-md mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <input id="herramienta" type="text" placeholder="Herramienta" class="p-2 border rounded" />
+            <input id="responsablePrestamo" type="text" placeholder="Responsable" class="p-2 border rounded" />
+            <input id="fechaDevolucion" type="date" class="p-2 border rounded" />
+            <button onclick="registrarPrestamo()" class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
+              Registrar Préstamo
+            </button>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Herramientas Prestadas</h2>
+          <table class="w-full text-left border border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="p-2 border">Herramienta</th>
+                <th class="p-2 border">Responsable</th>
+                <th class="p-2 border">Fecha Préstamo</th>
+                <th class="p-2 border">Fecha Devolución</th>
+                <th class="p-2 border">Estado</th>
+                <th class="p-2 border">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-prestamos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN MOVIMIENTOS -->
+      <div id="movimientos-seccion" class="hidden">
+        <h2 class="text-2xl font-bold mb-4">Movimientos de Inventario</h2>
+        <div class="bg-white p-4 rounded shadow-md mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <select id="productoMovimiento" class="p-2 border rounded">
+              <option value="">Selecciona Producto</option>
+            </select>
+            <select id="tipoMovimiento" class="p-2 border rounded">
+              <option value="">Selecciona Tipo</option>
+              <option value="entrada">Entrada</option>
+              <option value="salida">Salida</option>
+            </select>
+            <input id="cantidadMovimiento" type="number" min="1" placeholder="Cantidad" class="p-2 border rounded" />
+            <button onclick="registrarMovimiento()" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
+              Registrar Movimiento
+            </button>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Historial de Movimientos</h2>
+          <table class="w-full text-left border border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="p-2 border">Producto</th>
+                <th class="p-2 border">Tipo</th>
+                <th class="p-2 border">Cantidad</th>
+                <th class="p-2 border">Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-movimientos"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- LOGIN ---
+    function login() {
+      const user = document.getElementById("user").value;
+      const pass = document.getElementById("pass").value;
+      if (user === "admin" && pass === "1234") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").classList.remove("hidden");
+        cargarInventario();
+        cargarProductosMovimiento();
+        cargarPrestamos();
+        cargarMovimientos();
+      } else {
+        Swal.fire("Error", "Usuario o contraseña incorrectos", "error");
+      }
+    }
+
+    // --- TOGGLE SIDEBAR ---
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const contenido = document.getElementById("contenido");
+      if (sidebar.classList.contains("-translate-x-64")) {
+        sidebar.classList.remove("-translate-x-64");
+        contenido.classList.add("ml-64");
+      } else {
+        sidebar.classList.add("-translate-x-64");
+        contenido.classList.remove("ml-64");
+      }
+    }
+
+    // --- NAVEGACIÓN ENTRE SECCIONES ---
+    function mostrarSeccion(seccion) {
+      document.getElementById("inventario-seccion").classList.add("hidden");
+      document.getElementById("prestamos-seccion").classList.add("hidden");
+      document.getElementById("movimientos-seccion").classList.add("hidden");
+      if (seccion === "inventario") {
+        document.getElementById("inventario-seccion").classList.remove("hidden");
+        cargarInventario();
+        cargarProductosMovimiento();
+      } else if (seccion === "prestamos") {
+        document.getElementById("prestamos-seccion").classList.remove("hidden");
+      } else if (seccion === "movimientos") {
+        document.getElementById("movimientos-seccion").classList.remove("hidden");
+        cargarProductosMovimiento();
+        cargarMovimientos();
+      }
+    }
+
+    // --- INVENTARIO ---
+    function registrarProducto() {
+      const codigo = document.getElementById("codigo").value.trim();
+      const producto = document.getElementById("producto").value.trim();
+      const cantidad = Number(document.getElementById("cantidad").value);
+      const responsable = document.getElementById("responsable").value.trim();
+      const fecha = new Date().toLocaleDateString();
+
+      if (!codigo || !producto || !cantidad || cantidad <= 0 || !responsable) {
+        Swal.fire("Faltan datos", "Completa todos los campos correctamente", "warning");
+        return;
+      }
+
+      const datos = JSON.parse(localStorage.getItem("inventario")) || [];
+      if (datos.find((p) => p.codigo === codigo)) {
+        Swal.fire("Error", "El código ya existe en inventario", "error");
+        return;
+      }
+
+      const item = { codigo, producto, cantidad, responsable, fecha };
+      datos.push(item);
+      localStorage.setItem("inventario", JSON.stringify(datos));
+      limpiarFormularioProducto();
+      Swal.fire("Guardado", "Producto registrado", "success");
+      cargarInventario();
+      cargarProductosMovimiento();
+    }
+
+    function limpiarFormularioProducto() {
+      document.getElementById("codigo").value = "";
+      document.getElementById("producto").value = "";
+      document.getElementById("cantidad").value = "";
+      document.getElementById("responsable").value = "";
+    }
+
+    function cargarInventario() {
+      const datos = JSON.parse(localStorage.getItem("inventario")) || [];
+      const tabla = document.getElementById("tabla-inventario");
+      tabla.innerHTML = "";
+
+      // Manejar búsqueda si existe
+      const buscarInput = document.getElementById("buscar");
+      const filtro = buscarInput ? buscarInput.value.toLowerCase() : "";
+
+      datos.forEach((d) => {
+        if (
+          d.codigo.toLowerCase().includes(filtro) ||
+          d.producto.toLowerCase().includes(filtro)
+        ) {
+          tabla.innerHTML += `<tr>
+            <td class="p-2 border">${d.codigo}</td>
+            <td class="p-2 border">${d.producto}</td>
+            <td class="p-2 border">${d.cantidad}</td>
+            <td class="p-2 border">${d.responsable}</td>
+            <td class="p-2 border">${d.fecha}</td>
+          </tr>`;
+        }
+      });
+    }
+
+    document.getElementById("buscar").addEventListener("input", cargarInventario);
+
+    // --- PRESTAMOS ---
+    function registrarPrestamo() {
+      const herramienta = document.getElementById("herramienta").value.trim();
+      const responsable = document.getElementById("responsablePrestamo").value.trim();
+      const fechaPrestamo = new Date().toLocaleDateString();
+      const fechaDevolucion = document.getElementById("fechaDevolucion").value;
+
+      if (!herramienta || !responsable || !fechaDevolucion) {
+        Swal.fire("Faltan datos", "Completa todos los campos", "warning");
+        return;
+      }
+
+      const prestamos = JSON.parse(localStorage.getItem("prestamos")) || [];
+      prestamos.push({
+        herramienta,
+        responsable,
+        fechaPrestamo,
+        fechaDevolucion,
+        estado: "Pendiente de entrega",
+      });
+      localStorage.setItem("prestamos", JSON.stringify(prestamos));
+      limpiarFormularioPrestamo();
+      Swal.fire("Guardado", "Préstamo registrado", "success");
+      cargarPrestamos();
+    }
+
+    function limpiarFormularioPrestamo() {
+      document.getElementById("herramienta").value = "";
+      document.getElementById("responsablePrestamo").value = "";
+      document.getElementById("fechaDevolucion").value = "";
+    }
+
+    function cargarPrestamos() {
+      const prestamos = JSON.parse(localStorage.getItem("prestamos")) || [];
+      const tabla = document.getElementById("tabla-prestamos");
+      tabla.innerHTML = "";
+
+      prestamos.forEach((p, index) => {
+        const colorEstado =
+          p.estado === "Pendiente de entrega" ? "bg-red-200 text-red-800" : "bg-green-200 text-green-800";
+
+        tabla.innerHTML += `<tr class="${colorEstado}">
+          <td class="p-2 border">${p.herramienta}</td>
+          <td class="p-2 border">${p.responsable}</td>
+          <td class="p-2 border">${p.fechaPrestamo}</td>
+          <td class="p-2 border">${p.fechaDevolucion}</td>
+          <td class="p-2 border font-bold">${p.estado}</td>
+          <td class="p-2 border">
+            ${
+              p.estado === "Pendiente de entrega"
+                ? `<button onclick="marcarEntregado(${index})" class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">Entregado</button>`
+                : ""
+            }
+          </td>
+        </tr>`;
+      });
+    }
+
+    function marcarEntregado(index) {
+      const prestamos = JSON.parse(localStorage.getItem("prestamos")) || [];
+      prestamos[index].estado = "Entregado";
+      localStorage.setItem("prestamos", JSON.stringify(prestamos));
+      cargarPrestamos();
+    }
+
+    // --- MOVIMIENTOS ---
+    function cargarProductosMovimiento() {
+      const select = document.getElementById("productoMovimiento");
+      const productos = JSON.parse(localStorage.getItem("inventario")) || [];
+
+      select.innerHTML = '<option value="">Selecciona Producto</option>';
+
+      productos.forEach((p) => {
+        select.innerHTML += `<option value="${p.codigo}">${p.codigo} - ${p.producto}</option>`;
+      });
+    }
+
+    function registrarMovimiento() {
+      const codigo = document.getElementById("productoMovimiento").value;
+      const tipo = document.getElementById("tipoMovimiento").value;
+      const cantidad = Number(document.getElementById("cantidadMovimiento").value);
+      const fecha = new Date().toLocaleDateString();
+
+      if (!codigo || !tipo || cantidad <= 0) {
+        Swal.fire("Faltan datos", "Completa todos los campos correctamente", "warning");
+        return;
+      }
+
+      const inventario = JSON.parse(localStorage.getItem("inventario")) || [];
+      const producto = inventario.find((p) => p.codigo === codigo);
+
+      if (!producto) {
+        Swal.fire("Error", "Producto no encontrado", "error");
+        return;
+      }
+
+      if (tipo === "salida") {
+        if (producto.cantidad < cantidad) {
+          Swal.fire("Sin stock", "No hay suficiente stock para retirar esa cantidad", "error");
+          return;
+        }
+        producto.cantidad -= cantidad;
+      } else if (tipo === "entrada") {
+        producto.cantidad += cantidad;
+      }
+
+      localStorage.setItem("inventario", JSON.stringify(inventario));
+
+      const movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
+      movimientos.push({ producto: producto.producto, tipo, cantidad, fecha });
+      localStorage.setItem("movimientos", JSON.stringify(movimientos));
+
+      Swal.fire("Registrado", "Movimiento guardado", "success");
+      cargarInventario();
+      cargarMovimientos();
+    }
+
+    function cargarMovimientos() {
+      const movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
+      const tabla = document.getElementById("tabla-movimientos");
+      tabla.innerHTML = "";
+
+      movimientos.forEach((m) => {
+        tabla.innerHTML += `<tr>
+          <td class="p-2 border">${m.producto}</td>
+          <td class="p-2 border">${m.tipo}</td>
+          <td class="p-2 border">${m.cantidad}</td>
+          <td class="p-2 border">${m.fecha}</td>
+        </tr>`;
+      });
+    }
+
+    // --- EXPORTAR PDF ---
+    function exportarPDF() {
+      const tabla = document.getElementById("tabla-container");
+      const opt = {
+        margin: 0.5,
+        filename: "Inventario.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      };
+      html2pdf().set(opt).from(tabla).save();
+    }
+
+    // --- BORRAR TODOS LOS DATOS ---
+    function borrarDatos() {
+      localStorage.clear();
+      cargarInventario();
+      cargarPrestamos();
+      cargarMovimientos();
+      Swal.fire("Datos borrados", "Se ha limpiado todo el almacenamiento local", "success");
+    }
+
+    // Cargar datos guardados al inicio
+    window.onload = () => {
+      cargarInventario();
+      cargarPrestamos();
+      cargarMovimientos();
+      cargarProductosMovimiento();
+    };
+  </script>
+</body>
+</html>
