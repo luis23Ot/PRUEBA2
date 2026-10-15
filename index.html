@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Vibracional - Bombas Autocebantes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 shadow-md">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="text-xs uppercase tracking-wider text-blue-400 font-semibold">Industrias Islas Perú</span>
+                <h1 class="text-xl font-bold text-white">Registro Vibracional - Bomba Autocebante A</h1>
+            </div>
+            <!-- Configuración Google Sheets URL -->
+            <div class="w-full sm:w-auto flex items-center gap-2 bg-slate-900 p-2 rounded-lg border border-slate-700">
+                <span class="text-xs text-slate-400">Google Script URL:</span>
+                <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" 
+                    class="bg-slate-800 text-xs px-2 py-1 rounded text-slate-200 w-48 sm:w-64 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <button onclick="saveScriptUrl()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded font-medium transition">Guardar</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl w-full mx-auto p-4 sm:p-6 my-6 bg-slate-800 rounded-2xl shadow-xl border border-slate-700">
+        
+        <!-- Progress Steps Bar -->
+        <div class="mb-8">
+            <div class="flex justify-between text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                <span id="label-step-1" class="text-blue-400">1. Operación</span>
+                <span id="label-step-2">2. Motor (Vent)</span>
+                <span id="label-step-3">3. Motor (Acop)</span>
+                <span id="label-step-4">4. Bomba (Acop)</span>
+                <span id="label-step-5">5. Bomba (Desc)</span>
+            </div>
+            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
+            </div>
+        </div>
+
+        <form id="vibrationForm" onsubmit="submitForm(event)">
+            
+            <!-- PASO 1: Datos de Operación -->
+            <div id="step-1" class="step-content active space-y-4">
+                <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">DATOS DE OPERACIÓN</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Técnico</label>
+                        <input type="text" id="tecnico" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Fecha</label>
+                        <input type="date" id="fecha" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Hora</label>
+                        <input type="time" id="hora" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Frecuencia (Hz)</label>
+                        <input type="number" step="any" id="frecuencia" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Amperaje (A)</label>
+                        <input type="number" step="any" id="amperaje" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Velocidad (RPM)</label>
+                        <input type="number" step="any" id="velocidad" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Voltaje (V)</label>
+                        <input type="number" step="any" id="voltaje" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Presión de succión - POLHG</label>
+                        <input type="number" step="any" id="presion_succion" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Presión de descarga - psi</label>
+                        <input type="number" step="any" id="presion_descarga" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Flujo - LT/SEG</label>
+                        <input type="number" step="any" id="flujo" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="flex justify-end pt-4">
+                    <button type="button" onclick="nextStep(2)" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-lg transition">Siguiente: Motor Lado Vent</button>
+                </div>
+            </div>
+
+            <!-- PASO 2: Motor - Lado Vent -->
+            <div id="step-2" class="step-content space-y-4">
+                <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">MOTOR - LADO VENTILADOR</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">1EE (gE)</label>
+                        <input type="number" step="any" id="m_vent_1ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">1H (mm/s)</label>
+                        <input type="number" step="any" id="m_vent_1h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">1V (mm/s)</label>
+                        <input type="number" step="any" id="m_vent_1v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">1A (mm/s)</label>
+                        <input type="number" step="any" id="m_vent_1a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Cambio motor</label>
+                        <input type="text" id="m_vent_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">TEMP (°C)</label>
+                        <input type="number" step="any" id="m_vent_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-300">Dosif. Grasa (GR)</label>
+                        <input type="number" step="any" id="m_vent_grasa" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                </div>
+                <div class="flex justify-between pt-4">
+                    <button type="button" onclick="prevStep(1)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2.5 rounded-lg transition">Anterior</button>
+                    <button type="button" onclick="nextStep(3)" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-lg transition">Siguiente: Motor Lado Acop</button>
+                </div>
+            </div>
+
+            <!-- PASO 3: Motor - Lado Acop -->
+            <div id="step-3" class="step-content space-y-4">
+                <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">MOTOR - LADO ACOPLE</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">2EE (gE)</label>
+                        <input type="number" step="any" id="m_acop_2ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">2H (mm/s)</label>
+                        <input type="number" step="any" id="m_acop_2h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">2V (mm/s)</label>
+                        <input type="number" step="any" id="m_acop_2v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">2A (mm/s)</label>
+                        <input type="number" step="any" id="m_acop_2a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Cambio motor</label>
+                        <input type="text" id="m_acop_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">TEMPER (°C)</label>
+                        <input type="number" step="any" id="m_acop_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-300">Grasa (ml)</label>
+                        <input type="number" step="any" id="m_acop_grasa" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                </div>
+                <div class="flex justify-between pt-4">
+                    <button type="button" onclick="prevStep(2)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2.5 rounded-lg transition">Anterior</button>
+                    <button type="button" onclick="nextStep(4)" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-lg transition">Siguiente: Bomba Lado Acop</button>
+                </div>
+            </div>
+
+            <!-- PASO 4: Bomba - Lado ACOP -->
+            <div id="step-4" class="step-content space-y-4">
+                <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">BOMBA - LADO ACOPLE</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">3EE (gE)</label>
+                        <input type="number" step="any" id="b_acop_3ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">3H (mm/s)</label>
+                        <input type="number" step="any" id="b_acop_3h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">3V (mm/s)</label>
+                        <input type="number" step="any" id="b_acop_3v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">3A (mm/s)</label>
+                        <input type="number" step="any" id="b_acop_3a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Cambio bomba</label>
+                        <input type="text" id="b_acop_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">TEMPER (°C)</label>
+                        <input type="number" step="any" id="b_acop_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-300">Lubricador (ml)</label>
+                        <input type="number" step="any" id="b_acop_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                </div>
+                <div class="flex justify-between pt-4">
+                    <button type="button" onclick="prevStep(3)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2.5 rounded-lg transition">Anterior</button>
+                    <button type="button" onclick="nextStep(5)" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-lg transition">Siguiente: Bomba Lado Desc</button>
+                </div>
+            </div>
+
+            <!-- PASO 5: Bomba - Lado Desc y Trabajos -->
+            <div id="step-5" class="step-content space-y-4">
+                <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">BOMBA - LADO DESCARGA Y TRABAJOS</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">4EE (gE)</label>
+                        <input type="number" step="any" id="b_desc_4ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">4H (mm/s)</label>
+                        <input type="number" step="any" id="b_desc_4h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">4V (mm/s)</label>
+                        <input type="number" step="any" id="b_desc_4v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">4A (mm/s)</label>
+                        <input type="number" step="any" id="b_desc_4a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">TEMPER (°C)</label>
+                        <input type="number" step="any" id="b_desc_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300">Lubricador (ml)</label>
+                        <input type="number" step="any" id="b_desc_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-300">Trabajos realizados otros (MOTOR)</label>
+                        <textarea id="trabajos_motor" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-300">Trabajos realizados otros (BOMBA)</label>
+                        <textarea id="trabajos_bomba" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-between pt-4">
+                    <button type="button" onclick="prevStep(4)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2.5 rounded-lg transition">Anterior</button>
+                    <button type="submit" id="submitBtn" class="bg-green-600 hover:bg-green-500 text-white font-semibold px-8 py-2.5 rounded-lg transition shadow-lg">Registrar y Enviar a Google Sheets</button>
+                </div>
+            </div>
+
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-slate-500">
+        Sistema de Control Vibracional &bull; Industrias Islas Perú
+    </footer>
+
+    <!-- JavaScript Scripting -->
+    <script>
+        // Cargar URL guardada previamente
+        window.onload = function() {
+            const savedUrl = localStorage.getItem('googleScriptUrl');
+            if (savedUrl) {
+                document.getElementById('scriptUrl').value = savedUrl;
+            }
+            // Asignar fecha y hora actual por defecto
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+            const now = new Date().toTimeString().slice(0,5);
+            document.getElementById('hora').value = now;
+        }
+
+        function saveScriptUrl() {
+            const url = document.getElementById('scriptUrl').value.trim();
+            if (url) {
+                localStorage.setItem('googleScriptUrl', url);
+                alert('¡URL guardada correctamente!');
+            } else {
+                alert('Por favor ingresa una URL válida.');
+            }
+        }
+
+        function nextStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            updateProgress(step);
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            updateProgress(step);
+        }
+
+        function updateProgress(step) {
+            const percentage = (step / 5) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            const url = document.getElementById('scriptUrl').value.trim();
+            if (!url) {
+                alert('Por favor ingresa y guarda la URL de Google Apps Script antes de enviar.');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = 'Enviando...';
+
+            const payload = {
+                tecnico: document.getElementById('tecnico').value,
+                fecha: document.getElementById('fecha').value,
+                hora: document.getElementById('hora').value,
+                frecuencia: document.getElementById('frecuencia').value,
+                amperaje: document.getElementById('amperaje').value,
+                velocidad: document.getElementById('velocidad').value,
+                voltaje: document.getElementById('voltaje').value,
+                presion_succion: document.getElementById('presion_succion').value,
+                presion_descarga: document.getElementById('presion_descarga').value,
+                flujo: document.getElementById('flujo').value,
+                
+                m_vent_1ee: document.getElementById('m_vent_1ee').value,
+                m_vent_1h: document.getElementById('m_vent_1h').value,
+                m_vent_1v: document.getElementById('m_vent_1v').value,
+                m_vent_1a: document.getElementById('m_vent_1a').value,
+                m_vent_cambio: document.getElementById('m_vent_cambio').value,
+                m_vent_temp: document.getElementById('m_vent_temp').value,
+                m_vent_grasa: document.getElementById('m_vent_grasa').value,
+                
+                m_acop_2ee: document.getElementById('m_acop_2ee').value,
+                m_acop_2h: document.getElementById('m_acop_2h').value,
+                m_acop_2v: document.getElementById('m_acop_2v').value,
+                m_acop_2a: document.getElementById('m_acop_2a').value,
+                m_acop_cambio: document.getElementById('m_acop_cambio').value,
+                m_acop_temp: document.getElementById('m_acop_temp').value,
+                m_acop_grasa: document.getElementById('m_acop_grasa').value,
+                
+                b_acop_3ee: document.getElementById('b_acop_3ee').value,
+                b_acop_3h: document.getElementById('b_acop_3h').value,
+                b_acop_3v: document.getElementById('b_acop_3v').value,
+                b_acop_3a: document.getElementById('b_acop_3a').value,
+                b_acop_cambio: document.getElementById('b_acop_cambio').value,
+                b_acop_temp: document.getElementById('b_acop_temp').value,
+                b_acop_lub: document.getElementById('b_acop_lub').value,
+                
+                b_desc_4ee: document.getElementById('b_desc_4ee').value,
+                b_desc_4h: document.getElementById('b_desc_4h').value,
+                b_desc_4v: document.getElementById('b_desc_4v').value,
+                b_desc_4a: document.getElementById('b_desc_4a').value,
+                b_desc_temp: document.getElementById('b_desc_temp').value,
+                b_desc_lub: document.getElementById('b_desc_lub').value,
+                
+                trabajos_motor: document.getElementById('trabajos_motor').value,
+                trabajos_bomba: document.getElementById('trabajos_bomba').value
+            };
+
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert('¡Datos registrados y enviados a Google Sheets con éxito!');
+                document.getElementById('vibrationForm').reset();
+                nextStep(1);
+                // Restaurar fecha y hora
+                document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+                document.getElementById('hora').value = new Date().toTimeString().slice(0,5);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al enviar los datos. Revisa la consola o tu conexión.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerText = 'Registrar y Enviar a Google Sheets';
+            });
+        }
+    </script>
+</body>
+</html>
