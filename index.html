@@ -14,19 +14,15 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
 
+    <!-- Iframe oculto para evitar bloqueos CORS -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) { alert('¡Datos registrados y enviados a Google Sheets con éxito!'); document.getElementById('vibrationForm').reset(); nextStep(1); initDefaults(); submitted = false; document.getElementById('submitBtn').disabled = false; document.getElementById('submitBtn').innerText = 'Registrar y Enviar a Google Sheets'; }"></iframe>
+
     <!-- Header -->
     <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 shadow-md">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
                 <span class="text-xs uppercase tracking-wider text-blue-400 font-semibold">Industrias Islas Perú</span>
                 <h1 class="text-xl font-bold text-white">Registro Vibracional - Bomba Autocebante A</h1>
-            </div>
-            <!-- Configuración Google Sheets URL -->
-            <div class="w-full sm:w-auto flex items-center gap-2 bg-slate-900 p-2 rounded-lg border border-slate-700">
-                <span class="text-xs text-slate-400">Google Script URL:</span>
-                <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwY4ZpAOmxIvtO9EnUvICXn57ai3xFuuArpiij99yR2hBsWqd9lmU6J5TGFoWry-GXJlw/exec" 
-                    class="bg-slate-800 text-xs px-2 py-1 rounded text-slate-200 w-48 sm:w-64 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <button onclick="saveScriptUrl()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded font-medium transition">Guardar</button>
             </div>
         </div>
     </header>
@@ -48,7 +44,8 @@
             </div>
         </div>
 
-        <form id="vibrationForm" onsubmit="submitForm(event)">
+        <!-- Formulario apuntando al Web App con target iframe -->
+        <form id="vibrationForm" action="https://script.google.com/macros/s/AKfycbwY4ZpAOmxIvtO9EnUvICXn57ai3xFuuArpiij99yR2hBsWqd9lmU6J5TGFoWry-GXJlw/exec" method="POST" target="hidden_iframe" onsubmit="prepareSubmit()">
             
             <!-- PASO 1: Datos de Operación -->
             <div id="step-1" class="step-content active space-y-4">
@@ -56,43 +53,43 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Técnico</label>
-                        <input type="text" id="tecnico" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="text" name="tecnico" id="tecnico" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Fecha</label>
-                        <input type="date" id="fecha" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="date" name="fecha" id="fecha" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Hora</label>
-                        <input type="time" id="hora" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="time" name="hora" id="hora" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Frecuencia (Hz)</label>
-                        <input type="number" step="any" id="frecuencia" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="frecuencia" id="frecuencia" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Amperaje (A)</label>
-                        <input type="number" step="any" id="amperaje" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="amperaje" id="amperaje" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Velocidad (RPM)</label>
-                        <input type="number" step="any" id="velocidad" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="velocidad" id="velocidad" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Voltaje (V)</label>
-                        <input type="number" step="any" id="voltaje" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="voltaje" id="voltaje" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Presión de succión - POLHG</label>
-                        <input type="number" step="any" id="presion_succion" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="presion_succion" id="presion_succion" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Presión de descarga - psi</label>
-                        <input type="number" step="any" id="presion_descarga" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="presion_descarga" id="presion_descarga" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Flujo - LT/SEG</label>
-                        <input type="number" step="any" id="flujo" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" name="flujo" id="flujo" required class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div class="flex justify-end pt-4">
@@ -106,31 +103,31 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
-                        <input type="number" step="any" id="m_vent_1ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_vent_1ee" id="m_vent_1ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
-                        <input type="number" step="any" id="m_vent_1h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_vent_1h" id="m_vent_1h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
-                        <input type="number" step="any" id="m_vent_1v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_vent_1v" id="m_vent_1v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
-                        <input type="number" step="any" id="m_vent_1a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_vent_1a" id="m_vent_1a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Cambio motor</label>
-                        <input type="text" id="m_vent_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="text" name="m_vent_cambio" id="m_vent_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">TEMP (°C)</label>
-                        <input type="number" step="any" id="m_vent_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_vent_temp" id="m_vent_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-300">Dosif. Grasa (GR)</label>
-                        <input type="number" step="any" id="m_vent_grasa" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_vent_grasa" id="m_vent_grasa" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                 </div>
                 <div class="flex justify-between pt-4">
@@ -145,31 +142,31 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
-                        <input type="number" step="any" id="m_acop_2ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_acop_2ee" id="m_acop_2ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
-                        <input type="number" step="any" id="m_acop_2h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_acop_2h" id="m_acop_2h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
-                        <input type="number" step="any" id="m_acop_2v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_acop_2v" id="m_acop_2v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
-                        <input type="number" step="any" id="m_acop_2a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_acop_2a" id="m_acop_2a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Cambio motor</label>
-                        <input type="text" id="m_acop_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="text" name="m_acop_cambio" id="m_acop_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">TEMPER (°C)</label>
-                        <input type="number" step="any" id="m_acop_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_acop_temp" id="m_acop_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-300">Grasa (ml)</label>
-                        <input type="number" step="any" id="m_acop_grasa" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="m_acop_grasa" id="m_acop_grasa" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                 </div>
                 <div class="flex justify-between pt-4">
@@ -184,31 +181,31 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
-                        <input type="number" step="any" id="b_acop_3ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_acop_3ee" id="b_acop_3ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
-                        <input type="number" step="any" id="b_acop_3h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_acop_3h" id="b_acop_3h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
-                        <input type="number" step="any" id="b_acop_3v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_acop_3v" id="b_acop_3v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
-                        <input type="number" step="any" id="b_acop_3a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_acop_3a" id="b_acop_3a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Cambio bomba</label>
-                        <input type="text" id="b_acop_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="text" name="b_acop_cambio" id="b_acop_cambio" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">TEMPER (°C)</label>
-                        <input type="number" step="any" id="b_acop_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_acop_temp" id="b_acop_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-300">Lubricador (ml)</label>
-                        <input type="number" step="any" id="b_acop_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_acop_lub" id="b_acop_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                 </div>
                 <div class="flex justify-between pt-4">
@@ -223,35 +220,35 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
-                        <input type="number" step="any" id="b_desc_4ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_desc_4ee" id="b_desc_4ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
-                        <input type="number" step="any" id="b_desc_4h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_desc_4h" id="b_desc_4h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
-                        <input type="number" step="any" id="b_desc_4v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_desc_4v" id="b_desc_4v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
-                        <input type="number" step="any" id="b_desc_4a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_desc_4a" id="b_desc_4a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">TEMPER (°C)</label>
-                        <input type="number" step="any" id="b_desc_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_desc_temp" id="b_desc_temp" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300">Lubricador (ml)</label>
-                        <input type="number" step="any" id="b_desc_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <input type="number" step="any" name="b_desc_lub" id="b_desc_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-300">Motor - Trabajos realizados otros</label>
-                        <textarea id="trabajos_motor" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
+                        <textarea name="trabajos_motor" id="trabajos_motor" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-slate-300">Bomba - Trabajos realizados otros</label>
-                        <textarea id="trabajos_bomba" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
+                        <textarea name="trabajos_bomba" id="trabajos_bomba" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
                     </div>
                 </div>
                 <div class="flex justify-between pt-4">
@@ -270,22 +267,17 @@
 
     <!-- JavaScript Scripting -->
     <script>
+        let submitted = false;
+
         window.onload = function() {
-            // Cargar fecha y hora actual por defecto
+            initDefaults();
+        }
+
+        function initDefaults() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha').value = today;
             const now = new Date().toTimeString().slice(0,5);
             document.getElementById('hora').value = now;
-        }
-
-        function saveScriptUrl() {
-            const url = document.getElementById('scriptUrl').value.trim();
-            if (url) {
-                localStorage.setItem('googleScriptUrl', url);
-                alert('¡URL guardada correctamente!');
-            } else {
-                alert('Por favor ingresa una URL válida.');
-            }
         }
 
         function nextStep(step) {
@@ -305,87 +297,14 @@
             document.getElementById('progress-bar').style.width = percentage + '%';
         }
 
-        function submitForm(event) {
-            event.preventDefault();
-            const url = document.getElementById('scriptUrl').value.trim();
-            if (!url) {
-                alert('Por favor ingresa la URL de Google Apps Script.');
-                return;
-            }
-
+        function prepareSubmit() {
+            submitted = true;
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = 'Enviando...';
-
-            const payload = {
-                tecnico: document.getElementById('tecnico').value,
-                fecha: document.getElementById('fecha').value,
-                hora: document.getElementById('hora').value,
-                frecuencia: document.getElementById('frecuencia').value,
-                amperaje: document.getElementById('amperaje').value,
-                velocidad: document.getElementById('velocidad').value,
-                voltaje: document.getElementById('voltaje').value,
-                presion_succion: document.getElementById('presion_succion').value,
-                presion_descarga: document.getElementById('presion_descarga').value,
-                flujo: document.getElementById('flujo').value,
-                
-                m_vent_1ee: document.getElementById('m_vent_1ee').value,
-                m_vent_1h: document.getElementById('m_vent_1h').value,
-                m_vent_1v: document.getElementById('m_vent_1v').value,
-                m_vent_1a: document.getElementById('m_vent_1a').value,
-                m_vent_cambio: document.getElementById('m_vent_cambio').value,
-                m_vent_temp: document.getElementById('m_vent_temp').value,
-                m_vent_grasa: document.getElementById('m_vent_grasa').value,
-                
-                m_acop_2ee: document.getElementById('m_acop_2ee').value,
-                m_acop_2h: document.getElementById('m_acop_2h').value,
-                m_acop_2v: document.getElementById('m_acop_2v').value,
-                m_acop_2a: document.getElementById('m_acop_2a').value,
-                m_acop_cambio: document.getElementById('m_acop_cambio').value,
-                m_acop_temp: document.getElementById('m_acop_temp').value,
-                m_acop_grasa: document.getElementById('m_acop_grasa').value,
-                
-                b_acop_3ee: document.getElementById('b_acop_3ee').value,
-                b_acop_3h: document.getElementById('b_acop_3h').value,
-                b_acop_3v: document.getElementById('b_acop_3v').value,
-                b_acop_3a: document.getElementById('b_acop_3a').value,
-                b_acop_cambio: document.getElementById('b_acop_cambio').value,
-                b_acop_temp: document.getElementById('b_acop_temp').value,
-                b_acop_lub: document.getElementById('b_acop_lub').value,
-                
-                b_desc_4ee: document.getElementById('b_desc_4ee').value,
-                b_desc_4h: document.getElementById('b_desc_4h').value,
-                b_desc_4v: document.getElementById('b_desc_4v').value,
-                b_desc_4a: document.getElementById('b_desc_4a').value,
-                b_desc_temp: document.getElementById('b_desc_temp').value,
-                b_desc_lub: document.getElementById('b_desc_lub').value,
-                
-                trabajos_motor: document.getElementById('trabajos_motor').value,
-                trabajos_bomba: document.getElementById('trabajos_bomba').value
-            };
-
-            fetch(url, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                alert('¡Datos registrados y enviados a Google Sheets con éxito!');
-                document.getElementById('vibrationForm').reset();
-                nextStep(1);
-                document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-                document.getElementById('hora').value = new Date().toTimeString().slice(0,5);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Hubo un error al enviar los datos.');
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerText = 'Registrar y Enviar a Google Sheets';
-            });
         }
     </script>
+</body>
+</html>
 </body>
 </html>
