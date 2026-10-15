@@ -24,7 +24,7 @@
             <!-- Configuración Google Sheets URL -->
             <div class="w-full sm:w-auto flex items-center gap-2 bg-slate-900 p-2 rounded-lg border border-slate-700">
                 <span class="text-xs text-slate-400">Google Script URL:</span>
-                <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" 
+                <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwY4ZpAOmxIvtO9EnUvICXn57ai3xFuuArpiij99yR2hBsWqd9lmU6J5TGFoWry-GXJlw/exec" 
                     class="bg-slate-800 text-xs px-2 py-1 rounded text-slate-200 w-48 sm:w-64 focus:outline-none focus:ring-1 focus:ring-blue-500">
                 <button onclick="saveScriptUrl()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded font-medium transition">Guardar</button>
             </div>
@@ -38,10 +38,10 @@
         <div class="mb-8">
             <div class="flex justify-between text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
                 <span id="label-step-1" class="text-blue-400">1. Operación</span>
-                <span id="label-step-2">2. Motor (Vent)</span>
-                <span id="label-step-3">3. Motor (Acop)</span>
-                <span id="label-step-4">4. Bomba (Acop)</span>
-                <span id="label-step-5">5. Bomba (Desc)</span>
+                <span>2. Motor (Vent)</span>
+                <span>3. Motor (Acop)</span>
+                <span>4. Bomba (Acop)</span>
+                <span>5. Bomba (Desc)</span>
             </div>
             <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
                 <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-300" style="width: 20%;"></div>
@@ -105,19 +105,19 @@
                 <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">MOTOR - LADO VENTILADOR</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">1EE (gE)</label>
+                        <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
                         <input type="number" step="any" id="m_vent_1ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">1H (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
                         <input type="number" step="any" id="m_vent_1h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">1V (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
                         <input type="number" step="any" id="m_vent_1v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">1A (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
                         <input type="number" step="any" id="m_vent_1a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
@@ -144,19 +144,19 @@
                 <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">MOTOR - LADO ACOPLE</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">2EE (gE)</label>
+                        <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
                         <input type="number" step="any" id="m_acop_2ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">2H (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
                         <input type="number" step="any" id="m_acop_2h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">2V (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
                         <input type="number" step="any" id="m_acop_2v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">2A (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
                         <input type="number" step="any" id="m_acop_2a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
@@ -183,19 +183,19 @@
                 <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">BOMBA - LADO ACOPLE</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">3EE (gE)</label>
+                        <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
                         <input type="number" step="any" id="b_acop_3ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">3H (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
                         <input type="number" step="any" id="b_acop_3h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">3V (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
                         <input type="number" step="any" id="b_acop_3v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">3A (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
                         <input type="number" step="any" id="b_acop_3a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
@@ -222,19 +222,19 @@
                 <h2 class="text-lg font-bold text-blue-400 border-b border-slate-700 pb-2">BOMBA - LADO DESCARGA Y TRABAJOS</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">4EE (gE)</label>
+                        <label class="block text-sm font-medium text-slate-300">EE (gE)</label>
                         <input type="number" step="any" id="b_desc_4ee" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">4H (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">H (mm/s)</label>
                         <input type="number" step="any" id="b_desc_4h" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">4V (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">V (mm/s)</label>
                         <input type="number" step="any" id="b_desc_4v" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300">4A (mm/s)</label>
+                        <label class="block text-sm font-medium text-slate-300">A (mm/s)</label>
                         <input type="number" step="any" id="b_desc_4a" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div>
@@ -246,11 +246,11 @@
                         <input type="number" step="any" id="b_desc_lub" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-300">Trabajos realizados otros (MOTOR)</label>
+                        <label class="block text-sm font-medium text-slate-300">Motor - Trabajos realizados otros</label>
                         <textarea id="trabajos_motor" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-300">Trabajos realizados otros (BOMBA)</label>
+                        <label class="block text-sm font-medium text-slate-300">Bomba - Trabajos realizados otros</label>
                         <textarea id="trabajos_bomba" rows="2" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white"></textarea>
                     </div>
                 </div>
@@ -270,13 +270,8 @@
 
     <!-- JavaScript Scripting -->
     <script>
-        // Cargar URL guardada previamente
         window.onload = function() {
-            const savedUrl = localStorage.getItem('googleScriptUrl');
-            if (savedUrl) {
-                document.getElementById('scriptUrl').value = savedUrl;
-            }
-            // Asignar fecha y hora actual por defecto
+            // Cargar fecha y hora actual por defecto
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha').value = today;
             const now = new Date().toTimeString().slice(0,5);
@@ -314,7 +309,7 @@
             event.preventDefault();
             const url = document.getElementById('scriptUrl').value.trim();
             if (!url) {
-                alert('Por favor ingresa y guarda la URL de Google Apps Script antes de enviar.');
+                alert('Por favor ingresa la URL de Google Apps Script.');
                 return;
             }
 
@@ -379,13 +374,12 @@
                 alert('¡Datos registrados y enviados a Google Sheets con éxito!');
                 document.getElementById('vibrationForm').reset();
                 nextStep(1);
-                // Restaurar fecha y hora
                 document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
                 document.getElementById('hora').value = new Date().toTimeString().slice(0,5);
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Hubo un error al enviar los datos. Revisa la consola o tu conexión.');
+                alert('Hubo un error al enviar los datos.');
             })
             .finally(() => {
                 btn.disabled = false;
